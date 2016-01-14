@@ -29,43 +29,8 @@ var xml = require('xml2js');
 var http = require('http');
 var https = require('https');
 var Promise = require('bluebird');
+var _ = require('lodash');
 
-/* Native Extensions */
-if (!Object.hasOwnProperty('extend') && Object.extend === undefined) {
-	Object.defineProperty(Object.prototype, '_extend', {
-		enumerable: false,
-		value: function value(source) {
-			var _this = this;
-
-			Object.getOwnPropertyNames(source).forEach(function (property) {
-				if (_this.hasOwnProperty(property) && typeof _this[property] === 'object') {
-					_this[property] = _this[property].extend(source[property]);
-				} else {
-					Object.defineProperty(_this, property, Object.getOwnPropertyDescriptor(source, property));
-				}
-			});
-
-			return this;
-		}
-	});
-
-	Object.defineProperty(Object.prototype, 'extend', {
-		enumerable: false,
-		value: function value() {
-			var args = new Array(arguments.length),
-			    i = 0,
-			    l = args.length;
-
-			for (; i < l; ++i) {
-				args[i] = arguments[i];
-
-				this._extend(args[i]);
-			}
-
-			return this;
-		}
-	});
-}
 
 /* Helpers */
 var cleanXML = function cleanXML(xml) {
@@ -213,7 +178,7 @@ var QuickBase = (function () {
 			errorOnConnectionLimit: false
 		};
 
-		this.settings = ({}).extend(defaults, options || {});
+		this.settings = _.extend({}, defaults, options || {});
 
 		this.throttle = new Throttle(this.settings.connectionLimit, this.settings.errorOnConnectionLimit);
 
@@ -319,7 +284,7 @@ var QueryBuilder = (function () {
 		this.options = options;
 		this.callback = callback;
 
-		this.settings = ({}).extend(parent.settings);
+		this.settings = _.extend({}, parent.settings);
 
 		this.results;
 

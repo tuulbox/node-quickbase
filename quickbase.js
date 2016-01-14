@@ -21,39 +21,7 @@ const http = require('http');
 const https = require('https');
 const Promise = require('bluebird');
 
-/* Native Extensions */
-if(!Object.hasOwnProperty('extend') && Object.extend === undefined){
-	Object.defineProperty(Object.prototype, '_extend', {
-		enumerable: false,
-		value (source) {
-			Object.getOwnPropertyNames(source).forEach((property) => {
-				if(this.hasOwnProperty(property) && typeof(this[property]) === 'object'){
-					this[property] = this[property].extend(source[property]);
-				}else{
-					Object.defineProperty(this, property, Object.getOwnPropertyDescriptor(source, property));
-				}
-			});
-
-			return this;
-		}
-	});
-
-	Object.defineProperty(Object.prototype, 'extend', {
-		enumerable: false,
-		value () {
-			let args = new Array(arguments.length),
-				i = 0, l = args.length;
-
-			for(; i < l; ++i){
-				args[i] = arguments[i];
-
-				this._extend(args[i]);
-			}
-
-			return this;
-		}
-	});
-}
+const _ = require('lodash');
 
 /* Helpers */
 const cleanXML = (xml) => {
@@ -194,7 +162,7 @@ class QuickBase {
 			errorOnConnectionLimit: false
 		};
 
-		this.settings = ({}).extend(defaults, options || {});
+		this.settings = _.extend({}, defaults, options || {});
 
 		this.throttle = new Throttle(this.settings.connectionLimit, this.settings.errorOnConnectionLimit);
 
@@ -291,7 +259,7 @@ class QueryBuilder {
 		this.options = options;
 		this.callback = callback;
 
-		this.settings = ({}).extend(parent.settings);
+		this.settings = _.extend({}, parent.settings);
 
 		this.results;
 
